@@ -3,8 +3,11 @@ import ErrorBoundary from '../ErrorBoundary';
 import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack } from '@mui/material';
 import { ValidateString } from '../../utilities/UtilityFunction';
 import { Google, Apple, Facebook } from '@mui/icons-material';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const SignUp = (props) => {
+    const navigate = useNavigate();
     const [userInfo, setUserInfo] = React.useState({
         firstName: {
             label: 'First Name',
@@ -48,7 +51,11 @@ const SignUp = (props) => {
         }
     });
 
-    const [emailSubscription, setEmailSubscription] = React.useState(false)
+    const [error, setError] = React.useState(null);
+
+    const [emailSubscription, setEmailSubscription] = React.useState(false);
+
+    const [signUpSuccessful, setSignUpSuccessful] = React.useState(true);
 
     const handleInputChange = (key, value) => {
         try {
@@ -65,12 +72,33 @@ const SignUp = (props) => {
     const handleSubmitClick = () => {
         try {
             let isValid = true;
-            Object.keys(userInfo).forEach(key => {
-                if (userInfo[key].error)
+            let newUserInfo = { ...userInfo }
+            Object.keys(newUserInfo).forEach(key => {
+                newUserInfo[key].error = ValidateString(newUserInfo[key].value, newUserInfo[key].validations, key === "email" ? "Email Address Format is invalid" : "Password must contain atleast one special character, lowercase character, uppercase character and a number");
+                if (newUserInfo[key].error)
                     isValid = false;
             });
             if (isValid) {
-                // TODO
+                setError(null);
+                axios.post("http://localhost:3000/api/users/", {
+                    FirstName: userInfo.firstName.value,
+                    LastName: userInfo.lastName.value,
+                    EmailID: userInfo.email.value,
+                    Password: userInfo.password.value,
+                    EmailSubscription: emailSubscription
+                }).then(response => {
+                    if (response.data.success) {
+                        setSignUpSuccessful(true);
+                    }
+                    else {
+                        setError(response.data.error);
+                    }
+                }).catch(error => {
+                    console.log("Error signing up the user: ", error);
+                    setError("Something went wrong!");
+                })
+            } else {
+                setUserInfo(newUserInfo)
             }
         }
         catch (error) {
@@ -81,55 +109,73 @@ const SignUp = (props) => {
     return (
         <ErrorBoundary>
             <Box sx={{ flexGrow: 1, my: 10 }}>
-                <Grid container spacing={2} >
-                    <Grid size={{ xs: 12, md: 6, lg: 4, xl: 3 }}>
-                        <ErrorBoundary>
-                            <Typography variant='h5' sx={{ paddingBottom: "10px" }}>
-                                Sign Up
-                            </Typography>
-                            <Typography variant='span' sx={{ paddingBottom: "10px" }}>
-                                New bidders, as soon as you have submitted your information you will be eligible to bid in the auction
-                            </Typography>
-                            {
-                                Object.keys(userInfo).map(key => (
-                                    <Grid key={key} size={12} sx={{ my: 2 }}>
-                                        <TextField
-                                            error={userInfo[key].error !== null}
-                                            variant='outlined'
-                                            value={userInfo[key].value}
-                                            label={userInfo[key].label}
-                                            type={userInfo[key].type}
-                                            fullWidth
-                                            helperText={userInfo[key].error}
-                                            onChange={(event) => { handleInputChange(key, event.target.value) }}
+                <Grid container spacing={2}>
+                    {!signUpSuccessful ?
+                        <>
+                            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 3 }}>
+                                <ErrorBoundary>
+                                    <Typography variant='h5' sx={{ paddingBottom: "10px" }}>
+                                        Sign Up
+                                    </Typography>
+                                    <Typography variant='span' sx={{ paddingBottom: "10px" }}>
+                                        New bidders, as soon as you have submitted your information you will be eligible to bid in the auction
+                                    </Typography>
+                                    {
+                                        Object.keys(userInfo).map(key => (
+                                            <Grid key={key} size={12} sx={{ my: 2 }}>
+                                                <TextField
+                                                    error={userInfo[key].error !== null}
+                                                    variant='outlined'
+                                                    value={userInfo[key].value}
+                                                    label={userInfo[key].label}
+                                                    type={userInfo[key].type}
+                                                    fullWidth
+                                                    helperText={userInfo[key].error}
+                                                    onChange={(event) => { handleInputChange(key, event.target.value) }}
+                                                />
+                                            </Grid>
+                                        ))
+                                    }
+                                    <Grid size={12} sx={{ my: 2 }}>
+                                        <FormControlLabel
+                                            control={<Checkbox value={emailSubscription} onClick={(event) => { setEmailSubscription(!emailSubscription) }} />}
+                                            label="Receive outbid emails"
                                         />
                                     </Grid>
-                                ))
-                            }
-                            <Grid size={12} sx={{ my: 2 }}>
-                                <FormControlLabel
-                                    control={<Checkbox value={emailSubscription} onClick={(event) => { setEmailSubscription(!emailSubscription) }} />}
-                                    label="Receive outbid emails"
-                                />
+                                    <Grid size={12} sx={{ my: 2 }}>
+                                        <Button variant='contained' fullWidth onClick={handleSubmitClick}>
+                                            Submit
+                                        </Button>
+                                        {error ? <Typography variant="body2" sx={{ color: "red", width: "100%", textAlign: "center", mt: 1 }} >{error}</Typography> : null}
+                                    </Grid>
+                                    <Divider>or sign up with</Divider>
+                                    <Grid size={12} sx={{ my: 2 }}>
+                                        <Stack spacing={3} direction="row">
+                                            <Button size='medium' variant='outlined' startIcon={<Google />}>Google</Button>
+                                            <Button size='medium' variant='outlined' startIcon={<Apple />}>Apple</Button>
+                                            <Button size='medium' variant='outlined' startIcon={<Facebook />}>Facebook</Button>
+                                        </Stack>
+                                    </Grid>
+                                </ErrorBoundary>
                             </Grid>
-                            <Grid size={12} sx={{ my: 2 }}>
-                                <Button variant='contained' fullWidth onClick={handleSubmitClick}>
-                                    Submit
+                            <Grid size={{ xs: 12, md: 6, lg: 8, xl: 9 }}>
+
+                            </Grid>
+                        </> :
+                        <>
+                            <Grid size={{ xs: 12 }} sx={{ justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                                <Typography variant='h2'>
+                                    Uncover Deals, Unleash Excitement: Dive into Our Auctions Today!
+                                </Typography>
+                                <Typography sx={{ mt: 4, mb: 10 }} variant='h4'>
+                                    SIGNED UP SUCCESSFULLY!
+                                </Typography>
+                                <Button variant='contained' sx={{ alignSelf: "center" }} onClick={() => navigate("/login")}>
+                                    Login Now
                                 </Button>
                             </Grid>
-                            <Divider>or sign up with</Divider>
-                            <Grid size={12} sx={{ my: 2 }}>
-                                <Stack spacing={3} direction="row">
-                                    <Button size='small' variant='outlined' startIcon={<Google />}>Google</Button>
-                                    <Button size='small' variant='outlined' startIcon={<Apple />}>Apple</Button>
-                                    <Button size='small' variant='outlined' startIcon={<Facebook />}>Facebook</Button>
-                                </Stack>
-                            </Grid>
-                        </ErrorBoundary>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6, lg: 8, xl: 9 }}>
-
-                    </Grid>
+                        </>
+                    }
                 </Grid>
             </Box>
         </ErrorBoundary>

@@ -49,7 +49,22 @@ const AuctionList = (props) => {
             CurrentBid: "$157",
             CloseTime: "1 day 12 hrs 43 mins"
         }])
+
+
     }, [])
+
+    // React.useEffect(() => {
+    //     axios.get("http://localhost:3000/api/auctions/all")
+    //         .then(response => {
+    //             console.log(response);
+    //             if (response.data.success) {
+    //                 setAuctions(response.data.data);
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.log("Error fetching all the auctions: ", error);
+    //         });
+    // }, []);
 
     return (
         <ErrorBoundary>

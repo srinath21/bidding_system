@@ -2,8 +2,14 @@ import React from 'react';
 import ErrorBoundary from '../ErrorBoundary';
 import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack } from '@mui/material';
 import { Google, Apple, Facebook } from '@mui/icons-material';
+import axios from 'axios';
+import { connect } from 'react-redux';
+import { ValidateString } from '../../utilities/UtilityFunction';
+import * as actions from '../../redux/actions/userActions';
+import { useNavigate } from 'react-router';
 
 const Login = (props) => {
+    const navigate = useNavigate();
     const [userInfo, setUserInfo] = React.useState({
         email: {
             label: 'Email Address',
@@ -20,12 +26,14 @@ const Login = (props) => {
             error: null,
             type: 'password',
             validations: {
+                minLength: 1,
                 maxLength: 20,
             }
         }
     });
 
     const [keepUserSignedIn, setKeepUserSignedIn] = React.useState(true)
+    const [error, setError] = React.useState(true);
 
     const handleInputChange = (key, value) => {
         try {
@@ -42,12 +50,28 @@ const Login = (props) => {
     const handleSubmitClick = () => {
         try {
             let isValid = true;
-            Object.keys(userInfo).forEach(key => {
-                if (userInfo[key].error)
+            let newUserInfo = { ...userInfo }
+            Object.keys(newUserInfo).forEach(key => {
+                newUserInfo[key].error = ValidateString(newUserInfo[key].value, newUserInfo[key].validations, key === "email" ? "Email Address Format is invalid" : "Password must contain atleast one special character, lowercase character, uppercase character and a number");
+                if (newUserInfo[key].error)
                     isValid = false;
             });
             if (isValid) {
-                // TODO
+                axios.post("http://localhost:3000/api/users/login", {
+                    EmailID: userInfo.email.value,
+                    Password: userInfo.password.value
+                }).then(response => {
+                    if (response.data.success) {
+                        props.onLogin(response.data.data.authToken)
+                        navigate("/");
+                    }
+                }).catch(error => {
+                    console.log("Error during login: ", error);
+                    setError("Something went wrong!")
+                });
+            }
+            else {
+                setUserInfo(newUserInfo)
             }
         }
         catch (error) {
@@ -93,6 +117,7 @@ const Login = (props) => {
                                 <Button variant='contained' fullWidth onClick={handleSubmitClick}>
                                     Continue
                                 </Button>
+                                {error ? <Typography variant="body2" sx={{ color: "red", width: "100%", textAlign: "center", mt: 1 }} >{error}</Typography> : null}
                             </Grid>
                             <Divider>or sign up with</Divider>
                             <Grid size={12} sx={{ my: 2 }}>
@@ -113,4 +138,16 @@ const Login = (props) => {
     )
 }
 
-export default Login;
+const mapStateToProps = state => {
+    return {
+        userDetails: state.userReducer
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onLogin: (token) => dispatch(actions.setAuthToken(token))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

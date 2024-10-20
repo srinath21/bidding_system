@@ -4,6 +4,7 @@ import { AppBar, Container, Toolbar, Typography, Box, IconButton, Menu, MenuItem
 import NavItems from './NavItems';
 import UserMenu from './User/UserMenu';
 import { useNavigate } from "react-router-dom";
+import { connect } from 'react-redux';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 
@@ -107,7 +108,7 @@ const Navbar = (props) => {
                     </Typography>
                     <div style={{ display: 'flex', flexDirection: "row" }} >
                         <NavItems pages={props.menu} />
-                        {props.isUserSigned ?
+                        {props.userDetails.token !== null ?
                             <UserMenu items={props.userMenu} /> :
                             <>
                                 <Button
@@ -136,4 +137,10 @@ Navbar.defaultProps = {
 
 }
 
-export default Navbar;
+const mapStateToProps = state => {
+    return {
+        userDetails: state
+    }
+}
+
+export default connect(mapStateToProps, null)(Navbar);

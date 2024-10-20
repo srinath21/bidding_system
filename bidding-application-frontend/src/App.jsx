@@ -8,6 +8,7 @@ import Login from './components/Authorization/Login';
 import { Container } from '@mui/material';
 import AuctionList from './components/Auctions/AuctionList';
 import Bid from './components/Bidding/Bid';
+import Home from './components/Home';
 
 function App() {
   const pages = [
@@ -46,6 +47,7 @@ function App() {
       <Navbar menu={pages} userMenu={settings} />
       <Container fixed>
         <Routes>
+          <Route path="/" Component={Home} />
           <Route path="/about" Component={About} />
           <Route path="/signup" Component={SignUp} />
           <Route path="/login" Component={Login} />

@@ -1,6 +1,10 @@
 export function ValidateString(string, validations, errorMessage) {
-    if (validations === null || validations === undefined || string === null) {
+    if (validations === null || validations === undefined) {
         return null;
+    }
+
+    if (string === null || string === "") {
+        return "Required";
     }
 
     if (validations.expression && !(new RegExp(validations.expression).test(string))) {
