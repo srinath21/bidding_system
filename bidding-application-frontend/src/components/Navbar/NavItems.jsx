@@ -1,10 +1,13 @@
 import React from "react";
 import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import { ArrowDropDown, ArrowDropUp } from "@mui/icons-material";
 
 const NavItems = (props) => {
     const [isMenuOpen, setIsMenuOpen] = React.useState({});
     const [anchorElPage, setAnchorElPage] = React.useState(null);
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         let menuOpenStatus = {};
@@ -32,16 +35,34 @@ const NavItems = (props) => {
 
             setIsMenuOpen(menuOpenStatus)
         }
+        else {
+            navigate(page.URL)
+        }
     };
 
     return (
         <Box sx={{ display: "flex" }} marginRight={2}>
             {props.pages.map((page) => (
                 <>
+                    {/* <NavLink
+                        className="navlink"
+                        key={page}
+                        to={page.URL}
+                        onClick={(event) => handleMenuItemClick(event, page)}
+                    >
+                        {page.Name}
+                    </NavLink> */}
+
                     <Button
                         key={page}
                         onClick={(event) => handleMenuItemClick(event, page)}
-                        sx={{ my: 2, color: 'white', display: 'block' }}
+                        sx={{ my: 2, color: 'inherit' }}
+                        className="menu-button"
+                        endIcon={
+                            page.subPages ?
+                                (isMenuOpen[page.Name] ? <ArrowDropUp fontSize="small" /> : <ArrowDropDown fontSize="small" />)
+                                : null
+                        }
                     >
                         {page.Name}
                     </Button>
@@ -67,7 +88,7 @@ const NavItems = (props) => {
                                 })}
                             >
                                 {page.subPages.map((subPage) => (
-                                    <MenuItem key={subPage.Name} onClick={() => { }}>
+                                    <MenuItem key={subPage.Name} onClick={() => { navigate(subPage.URL) }}>
                                         <Typography sx={{ textAlign: 'center' }}>{subPage.Name}</Typography>
                                     </MenuItem>
                                 ))}

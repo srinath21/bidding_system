@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { AppBar, Container, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from '@mui/material';
+import { AppBar, Container, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Button } from '@mui/material';
 import NavItems from './NavItems';
 import UserMenu from './User/UserMenu';
+import { useNavigate } from "react-router-dom";
 
 const pages = ['Products', 'Pricing', 'Blog'];
 
 const Navbar = (props) => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
+    const navigate = useNavigate();
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -19,7 +21,7 @@ const Navbar = (props) => {
     };
 
     return (
-        <AppBar position="fixed">
+        <AppBar position="static" sx={{ backgroundColor: "pink", color: "black" }}>
             <Container maxWidth="xl">
                 <Toolbar
                     disableGutters
@@ -105,7 +107,19 @@ const Navbar = (props) => {
                     </Typography>
                     <div style={{ display: 'flex', flexDirection: "row" }} >
                         <NavItems pages={props.menu} />
-                        <UserMenu items={props.userMenu} />
+                        {props.isUserSigned ?
+                            <UserMenu items={props.userMenu} /> :
+                            <>
+                                <Button
+                                    sx={{ my: "auto", marginRight: "5px", color: 'dodgerblue', display: 'block' }}
+                                    onClick={() => navigate("/login")}>
+                                    Login
+                                </Button>
+                                <Button size='small' sx={{ py: 2, maxHeight: "40px", my: "auto" }} variant='contained' onClick={() => navigate("/signup")}>
+                                    Get Started
+                                </Button>
+                            </>
+                        }
                     </div>
                 </Toolbar>
             </Container>
