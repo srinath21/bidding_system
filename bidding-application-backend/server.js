@@ -2,9 +2,12 @@ const port = 3000;
 const express = require('express');
 const cors = require('cors');
 const app = express();
+// const multer = require('multer');
 
 // allow requests with json body
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 
 // currently allowing all origins
 app.use(cors());

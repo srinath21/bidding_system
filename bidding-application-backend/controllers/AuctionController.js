@@ -1,14 +1,17 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const router = express.Router();
 
-const { auth } = require('../utils/auth');
+router.use(fileUpload())
+
+const { auth, optional } = require('../utils/auth');
 
 const p = require('@prisma/client');
 const prisma = new p.PrismaClient();
 
 router.post("/", auth, async (req, res, next) => {
-    const { ProductName, ProductDescription, ProductImages, CloseTime, MinimumAmount } = req.body;
-    console.log(req.token_details)
+    const { ProductName, ProductDescription, CloseTime, MinimumAmount } = req.body;
+    const { ProductImages } = req.files;
     try {
         const user = await prisma.user.findFirst({
             where: {
@@ -31,7 +34,7 @@ router.post("/", auth, async (req, res, next) => {
                 UserID: user.ID,
                 ProductName: ProductName,
                 ProductDescription: ProductDescription,
-                ProductImages: ProductImages,
+                ProductImages: ProductImages.data,
                 CloseTime: CloseTime,
                 MinimumAmount: MinimumAmount
             }
@@ -42,7 +45,7 @@ router.post("/", auth, async (req, res, next) => {
 
         res.status(201)
             .json({
-                data: auction,
+                result: auction,
                 success: true
             })
     }
@@ -87,7 +90,7 @@ router.get("/", auth, async (req, res, next) => {
 
         res.status(200)
             .json({
-                data: auctions,
+                result: auctions,
                 success: true
             });
     }
@@ -101,18 +104,44 @@ router.get("/", auth, async (req, res, next) => {
     }
 })
 
-router.get("/all", async (req, res, next) => {
+router.get("/all", optional, async (req, res, next) => {
     try {
-        const auctions = await prisma.auction.findMany({});
+        const auctions = req.token_details ?
+            await prisma.auction.findMany({
+                where: {
+                    User: {
+                        EmailID: {
+                            not: req.token_details.email
+                        }
+                    },
+                }
+            }) :
+            await prisma.auction.findMany({});
 
         auctions.forEach(auction => {
             delete auction.ID;
             delete auction.UserID;
         })
 
+        const maxBids = await prisma.bid.groupBy({
+            by: ["AuctionCode"],
+            _max: {
+                StraightBidAmount: true
+            }
+        })
+
+        let auctionsWithMaxBid = auctions.map((auction) => {
+            const maxBid = maxBids.find(bid => bid.AuctionCode === auction.Code);
+
+            return {
+                ...auction,
+                CurrentBid: maxBid ? maxBid._max.StraightBidAmount : 0
+            }
+        });
+
         res.status(200)
             .json({
-                data: auctions,
+                result: auctionsWithMaxBid,
                 success: true
             });
     }
@@ -126,8 +155,9 @@ router.get("/all", async (req, res, next) => {
     }
 });
 
-router.patch("/:auctionCode", auth, async (req, res, next) => {
-    const { ProductName, ProductDescription, ProductImages, CloseTime, MinimumAmount } = req.body;
+router.patch("/auction/:auctionCode", auth, async (req, res, next) => {
+    const { ProductName, ProductDescription, CloseTime, MinimumAmount } = req.body;
+    const { ProductImages } = req.files;
     const auctionCode = req.params.auctionCode;
     try {
         const user = await prisma.user.findFirst({
@@ -150,12 +180,12 @@ router.patch("/:auctionCode", auth, async (req, res, next) => {
             data: {
                 ProductName: ProductName,
                 ProductDescription: ProductDescription,
-                ProductImages: ProductImages,
+                ProductImages: ProductImages.arrayBuffer,
                 CloseTime: CloseTime,
                 MinimumAmount: MinimumAmount
             },
             where: {
-                Code: auctionCode,
+                Code: parseInt(auctionCode),
                 UserID: user.ID
             }
         })
@@ -165,7 +195,7 @@ router.patch("/:auctionCode", auth, async (req, res, next) => {
 
         res.status(201)
             .json({
-                data: auction,
+                result: auction,
                 success: true
             })
     }
@@ -179,7 +209,7 @@ router.patch("/:auctionCode", auth, async (req, res, next) => {
     }
 });
 
-router.delete("/:auctionCode", auth, async (req, res, next) => {
+router.delete("/auction/:auctionCode", auth, async (req, res, next) => {
     const auctionCode = req.params.auctionCode;
     try {
         const user = await prisma.user.findFirst({
@@ -200,7 +230,7 @@ router.delete("/:auctionCode", auth, async (req, res, next) => {
 
         const auction = await prisma.auction.delete({
             where: {
-                Code: auctionCode,
+                Code: parseInt(auctionCode),
                 UserID: user.ID
             }
         });
@@ -210,7 +240,7 @@ router.delete("/:auctionCode", auth, async (req, res, next) => {
 
         res.status(200)
             .json({
-                data: auction,
+                result: auction,
                 success: true
             })
     }
@@ -224,7 +254,7 @@ router.delete("/:auctionCode", auth, async (req, res, next) => {
     }
 })
 
-router.get("/:auctionCode", auth, async (req, res, next) => {
+router.get("/auction/:auctionCode", auth, async (req, res, next) => {
     const auctionCode = req.params.auctionCode;
     try {
         const user = await prisma.user.findFirst({
@@ -245,17 +275,29 @@ router.get("/:auctionCode", auth, async (req, res, next) => {
 
         const auction = await prisma.auction.findUniqueOrThrow({
             where: {
-                Code: auctionCode,
-                UserID: user.ID
+                Code: parseInt(auctionCode),
             }
         });
+
+        const bid = await prisma.bid.findFirst({
+            where: {
+                AuctionCode: parseInt(auctionCode)
+            },
+            orderBy: {
+                StraightBidAmount: 'desc'
+            }
+        });
+
+        if (bid) {
+            auction.CurrentBid = bid.StraightBidAmount;
+        }
 
         delete auction.ID;
         delete auction.UserID;
 
         res.status(200)
             .json({
-                data: auction,
+                result: auction,
                 success: true
             })
     }
