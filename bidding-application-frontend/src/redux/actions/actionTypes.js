@@ -1,1 +1,2 @@
 export const SET_USER_AUTH_TOKEN = "SET_USER_AUTH_TOKEN";
+export const SET_USER_LOGOUT = "SET_USER_LOGOUT";

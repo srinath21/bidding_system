@@ -1,8 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Typography, Divider } from "@mui/material";
+import { connect } from "react-redux";
+import { useNavigate } from "react-router";
+import * as actions from '../../../redux/actions'
 
 const UserMenu = (props) => {
+    const navigate = useNavigate();
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
     const handleOpenUserMenu = (event) => {
@@ -16,8 +20,11 @@ const UserMenu = (props) => {
     return (
         <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} name='Srinath'>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <IconButton
+                    onClick={handleOpenUserMenu}
+                    sx={{ p: 0 }}
+                    name={props.userDetails.firstName + " " + props.userDetails.lastName}>
+                    <Avatar alt={props.userDetails.firstName + " " + props.userDetails.lastName} src="/static/images/avatar/2.jpg" />
                 </IconButton>
             </Tooltip>
             <Menu
@@ -41,8 +48,8 @@ const UserMenu = (props) => {
                         <Avatar />
                     </div>
                     <div>
-                        <div>Srinath Ravi</div>
-                        <div>srinathrao921@gmail.com</div>
+                        <div>{props.userDetails.firstName + " " + props.userDetails.lastName}</div>
+                        <div>{props.userDetails.emailID}</div>
                     </div>
                 </div>
                 {props.items.profileSettings.map((setting) => (
@@ -63,7 +70,11 @@ const UserMenu = (props) => {
                     </MenuItem>
                 ))}
                 <Divider />
-                <MenuItem key={"logout"} onClick={handleCloseUserMenu}>
+                <MenuItem key={"logout"} onClick={() => {
+                    handleCloseUserMenu();
+                    props.logout();
+                    navigate("/");
+                }}>
                     <Typography sx={{ textAlign: "center" }}>Log out</Typography>
                 </MenuItem>
             </Menu>
@@ -87,4 +98,16 @@ UserMenu.defaultProps = {
     }
 }
 
-export default UserMenu;
+const mapStateToProps = state => {
+    return {
+        userDetails: state.user
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        logout: () => dispatch(actions.logoutUser())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

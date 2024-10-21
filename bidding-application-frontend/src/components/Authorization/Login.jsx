@@ -1,15 +1,16 @@
 import React from 'react';
 import ErrorBoundary from '../ErrorBoundary';
-import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack } from '@mui/material';
+import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack, CircularProgress } from '@mui/material';
 import { Google, Apple, Facebook } from '@mui/icons-material';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { ValidateString } from '../../utilities/UtilityFunction';
-import * as actions from '../../redux/actions/userActions';
+import * as actions from '../../redux/actions';
 import { useNavigate } from 'react-router';
 
 const Login = (props) => {
     const navigate = useNavigate();
+    const [loading, setLoading] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState({
         email: {
             label: 'Email Address',
@@ -49,6 +50,7 @@ const Login = (props) => {
 
     const handleSubmitClick = () => {
         try {
+            setLoading(true);
             let isValid = true;
             let newUserInfo = { ...userInfo }
             Object.keys(newUserInfo).forEach(key => {
@@ -61,16 +63,23 @@ const Login = (props) => {
                     EmailID: userInfo.email.value,
                     Password: userInfo.password.value
                 }).then(response => {
+                    setLoading(false);
                     if (response.data.success) {
-                        props.onLogin(response.data.data.authToken)
+                        props.onLogin(response.data.result)
                         navigate("/");
                     }
+                    else {
+                        setLoading(false);
+                        setError(response.data.error);
+                    }
                 }).catch(error => {
+                    setLoading(false);
                     console.log("Error during login: ", error);
                     setError("Something went wrong!")
                 });
             }
             else {
+                setLoading(false);
                 setUserInfo(newUserInfo)
             }
         }
@@ -114,9 +123,23 @@ const Login = (props) => {
                                 />
                             </Grid>
                             <Grid size={12} sx={{ my: 2 }}>
-                                <Button variant='contained' fullWidth onClick={handleSubmitClick}>
-                                    Continue
-                                </Button>
+                                <Box sx={{ position: "relative" }}>
+                                    <Button variant='contained' fullWidth disabled={loading} onClick={handleSubmitClick}>
+                                        Continue
+                                    </Button>
+                                    {loading &&
+                                        <CircularProgress
+                                            size={24}
+                                            sx={{
+                                                position: 'absolute',
+                                                top: '50%',
+                                                left: '50%',
+                                                marginTop: '-12px',
+                                                marginLeft: '-12px',
+                                            }}
+                                        />
+                                    }
+                                </Box>
                                 {error ? <Typography variant="body2" sx={{ color: "red", width: "100%", textAlign: "center", mt: 1 }} >{error}</Typography> : null}
                             </Grid>
                             <Divider>or sign up with</Divider>
@@ -133,8 +156,8 @@ const Login = (props) => {
 
                     </Grid>
                 </Grid>
-            </Box>
-        </ErrorBoundary>
+            </Box >
+        </ErrorBoundary >
     )
 }
 

@@ -6,3 +6,10 @@ export const setAuthToken = (token) => {
         payload: token
     }
 };
+
+export const logoutUser = () => {
+    console.log('logout')
+    return {
+        type: actionTypes.SET_USER_LOGOUT
+    }
+}

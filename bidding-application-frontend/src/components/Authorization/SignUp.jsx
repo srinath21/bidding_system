@@ -1,6 +1,6 @@
 import React from 'react';
 import ErrorBoundary from '../ErrorBoundary';
-import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack } from '@mui/material';
+import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack, CircularProgress } from '@mui/material';
 import { ValidateString } from '../../utilities/UtilityFunction';
 import { Google, Apple, Facebook } from '@mui/icons-material';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 
 const SignUp = (props) => {
     const navigate = useNavigate();
+    const [loading, setLoading] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState({
         firstName: {
             label: 'First Name',
@@ -55,7 +56,7 @@ const SignUp = (props) => {
 
     const [emailSubscription, setEmailSubscription] = React.useState(false);
 
-    const [signUpSuccessful, setSignUpSuccessful] = React.useState(true);
+    const [signUpSuccessful, setSignUpSuccessful] = React.useState(false);
 
     const handleInputChange = (key, value) => {
         try {
@@ -71,6 +72,7 @@ const SignUp = (props) => {
 
     const handleSubmitClick = () => {
         try {
+            setLoading(true);
             let isValid = true;
             let newUserInfo = { ...userInfo }
             Object.keys(newUserInfo).forEach(key => {
@@ -93,11 +95,14 @@ const SignUp = (props) => {
                     else {
                         setError(response.data.error);
                     }
+                    setLoading(false);
                 }).catch(error => {
+                    setLoading(false);
                     console.log("Error signing up the user: ", error);
                     setError("Something went wrong!");
                 })
             } else {
+                setLoading(false);
                 setUserInfo(newUserInfo)
             }
         }
@@ -143,9 +148,25 @@ const SignUp = (props) => {
                                         />
                                     </Grid>
                                     <Grid size={12} sx={{ my: 2 }}>
-                                        <Button variant='contained' fullWidth onClick={handleSubmitClick}>
-                                            Submit
-                                        </Button>
+                                        <Box sx={{ position: "relative" }}>
+                                            <Button variant='contained' fullWidth onClick={handleSubmitClick} disabled={loading}>
+                                                Submit
+                                            </Button>
+                                            {
+                                                loading && (
+                                                    <CircularProgress
+                                                        size={24}
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: '50%',
+                                                            left: '50%',
+                                                            marginTop: '-12px',
+                                                            marginLeft: '-12px',
+                                                        }}
+                                                    />
+                                                )
+                                            }
+                                        </Box>
                                         {error ? <Typography variant="body2" sx={{ color: "red", width: "100%", textAlign: "center", mt: 1 }} >{error}</Typography> : null}
                                     </Grid>
                                     <Divider>or sign up with</Divider>
