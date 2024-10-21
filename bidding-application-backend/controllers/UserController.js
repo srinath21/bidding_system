@@ -61,7 +61,7 @@ router.post("/", async (req, res) => {
             .status(200)
             .json(
                 {
-                    data: user,
+                    result: user,
                     success: true
                 }
             )
@@ -119,17 +119,13 @@ router.post("/login", async (req, res, next) => {
         .status(200)
         .json({
             success: true,
-            data: {
-                authToken: token
+            result: {
+                authToken: token,
+                emailID: existingUser.EmailID,
+                firstName: existingUser.FirstName,
+                lastName: existingUser.LastName
             }
         })
 });
-
-router.get("/test", auth, (req, res, next) => {
-    res.json({
-        data: req.token_details,
-        success: true
-    });
-})
 
 module.exports = router;

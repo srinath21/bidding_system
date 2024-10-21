@@ -36,5 +36,22 @@ module.exports = {
             res.end();
             return;
         }
+    },
+    optional: (req, res, next) => {
+        const token = getTokenFromHeaders(req);
+        if (!token) {
+            next();
+        }
+        else {
+            try {
+                const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'superSecret');
+                req.token_details = decodedToken;
+                next();
+            }
+            catch (error) {
+                console.log("Error: ", error)
+                next();
+            }
+        }
     }
 }
