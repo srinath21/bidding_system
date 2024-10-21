@@ -7,8 +7,9 @@ import SignUp from './components/Authorization/SignUp';
 import Login from './components/Authorization/Login';
 import { Container } from '@mui/material';
 import AuctionList from './components/Auctions/AuctionList';
-import Bid from './components/Bidding/Bid';
 import Home from './components/Home';
+import Auction from './components/Auctions/Auction';
+import BidDetails from './components/Bidding/BidDetails';
 
 function App() {
   const pages = [
@@ -16,10 +17,11 @@ function App() {
       Name: 'Auctions',
       subPages: [
         {
-          Name: "New Auction"
+          Name: "New Auction",
+          URL: "/auctions/auction"
         },
         {
-          Name: "Live Auctions",
+          Name: "My Auctions",
           URL: "/auctions"
         }
       ],
@@ -45,14 +47,15 @@ function App() {
   return (
     <>
       <Navbar menu={pages} userMenu={settings} />
-      <Container fixed>
+      <Container sx={{ maxWidth: "none" }} fixed>
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/about" Component={About} />
           <Route path="/signup" Component={SignUp} />
           <Route path="/login" Component={Login} />
           <Route path="/auctions" Component={AuctionList} />
-          <Route path="/bid" Component={Bid} />``
+          <Route path="/auctions/auction/:code?" Component={Auction} />
+          <Route path="/bid/:code" Component={BidDetails} />
         </Routes>
       </Container>
     </>

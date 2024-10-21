@@ -8,7 +8,7 @@ const prisma = new p.PrismaClient();
 
 router.post("/", auth, async (req, res, next) => {
     try {
-        const { AuctionCode, BidAmount } = req.body;
+        const { AuctionCode, StraightBidAmount, MaximumBidAmount } = req.body;
         const user = await prisma.user.findFirst({
             where: {
                 EmailID: req.token_details.email
@@ -27,7 +27,7 @@ router.post("/", auth, async (req, res, next) => {
 
         const auction = await prisma.auction.findUnique({
             where: {
-                Code: AuctionCode,
+                Code: parseInt(AuctionCode),
                 UserID: {
                     not: user.ID
                 },
@@ -49,9 +49,10 @@ router.post("/", auth, async (req, res, next) => {
 
         const bid = await prisma.bid.create({
             data: {
-                AuctionCode: AuctionCode,
+                AuctionCode: parseInt(AuctionCode),
                 UserID: user.ID,
-                BidAmount: BidAmount
+                StraightBidAmount: StraightBidAmount,
+                MaximumBidAmount: MaximumBidAmount
             }
         });
 
@@ -60,7 +61,7 @@ router.post("/", auth, async (req, res, next) => {
 
         res.status(201)
             .json({
-                data: bid,
+                result: bid,
                 success: true
             });
     }
@@ -97,7 +98,8 @@ router.get("/all", auth, async (req, res, next) => {
                 UserID: user.ID
             },
             select: {
-                BidAmount: true,
+                StraightBidAmount: true,
+                MaximumBidAmount: true,
                 Auction: true
             }
         });
@@ -109,7 +111,7 @@ router.get("/all", auth, async (req, res, next) => {
 
         res.statusCode(200)
             .json({
-                data: bids,
+                result: bids,
                 success: true
             });
     }
@@ -123,7 +125,7 @@ router.get("/all", auth, async (req, res, next) => {
     }
 });
 
-router.get("/:auctionCode", auth, async (req, res, next) => {
+router.get("/auction/:auctionCode", auth, async (req, res, next) => {
     try {
         const user = await prisma.user.findFirst({
             where: {
@@ -143,18 +145,36 @@ router.get("/:auctionCode", auth, async (req, res, next) => {
 
         const bids = await prisma.bid.findMany({
             where: {
-                AuctionCode: req.params.auctionCode,
+                AuctionCode: parseInt(req.params.auctionCode),
             },
             select: {
-                BidAmount: true,
-                User: true
+                AuctionCode: true,
+                StraightBidAmount: true,
+                MaximumBidAmount: true,
+                User: {
+                    select: {
+                        FirstName: true,
+                        LastName: true,
+                        EmailID: true
+                    }
+                },
             }
         });
 
         bids.forEach(bid => {
-            delete bid.User.ID;
-            // delete bid.ID;
+            if (bid.User.EmailID === req.token_details.email)
+                bid.User.IsCurrentUser = true;
+            else
+                bid.User.IsCurrentUser = false;
+
+            delete bid.User.EmailID;
         })
+
+        res.status(200)
+            .json({
+                result: bids,
+                success: true
+            });
     }
     catch (error) {
         console.log("Error fetching all bids: ", error);

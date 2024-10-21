@@ -34,12 +34,13 @@ model Auction {
 }
 
 model Bid {
-  ID          String   @id @default(uuid())
-  Code        Int      @unique @default(autoincrement())
-  Auction     Auction  @relation(fields: [AuctionCode], references: [Code])
-  AuctionCode Int
-  User        User     @relation(fields: [UserID], references: [ID])
-  UserID      String
-  BidAmount   Decimal  @db.Decimal(18, 6)
-  CreatedTime DateTime @default(now()) @db.Timestamptz()
+  ID                String   @id @default(uuid())
+  Code              Int      @unique @default(autoincrement())
+  Auction           Auction  @relation(fields: [AuctionCode], references: [Code])
+  AuctionCode       Int
+  User              User     @relation(fields: [UserID], references: [ID])
+  UserID            String
+  StraightBidAmount Decimal  @db.Decimal(18, 6)
+  MaximumBidAmount  Decimal  @db.Decimal(18, 6)
+  CreatedTime       DateTime @default(now()) @db.Timestamptz()
 }

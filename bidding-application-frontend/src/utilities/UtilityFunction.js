@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export function ValidateString(string, validations, errorMessage) {
     if (validations === null || validations === undefined) {
         return null;
@@ -20,4 +22,19 @@ export function ValidateString(string, validations, errorMessage) {
     }
 
     return null;
+}
+
+export function getRemainingTime(date) {
+    let remainingTime = dayjs(date).diff(dayjs(new Date().toISOString()));
+
+    let days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+    // let seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+    if (days < 0) {
+        return 'Closed';
+    }
+
+    return `${days} days ${hours} hrs ${minutes} minutes`
 }
