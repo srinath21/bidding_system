@@ -56,6 +56,33 @@ router.post("/", auth, async (req, res, next) => {
             }
         });
 
+        const getObservers = await prisma.bid.findMany({
+            where: {
+                AuctionCode: parseInt(AuctionCode),
+                UserID: {
+                    not: user.ID
+                }
+            },
+            distinct: ['UserID'],
+            select: {
+                UserID: true
+            }
+        });
+
+        if (getObservers && getObservers.length > 0) {
+            for (i = 0; i < getObservers.length; i++) {
+                let notification = await prisma.notification.create({
+                    data: {
+                        Message: `${user.FirstName} ${user.LastName} has bid ${bid.StraightBidAmount} for ${auction.ProductName}`,
+                        UserID: getObservers[i].UserID
+                    }
+                });
+
+                if (notification)
+                    console.log("Successfully added notification");
+            }
+        }
+
         delete bid.ID;
         delete bid.UserID;
 
@@ -100,16 +127,29 @@ router.get("/all", auth, async (req, res, next) => {
             select: {
                 StraightBidAmount: true,
                 MaximumBidAmount: true,
-                Auction: true
+                Auction: {
+                    select: {
+                        Code: true,
+                        ProductName: true,
+                        ProductDescription: true,
+                        ProductImages: true,
+                        MinimumAmount: true,
+                        CloseTime: true
+                    }
+                },
+                CreatedTime: true
+            },
+            orderBy: {
+                CreatedTime: "desc"
             }
         });
 
         bids.forEach(bid => {
-            delete bid.Auction.ID;
-            delete bid.Auction.UserID;
+            bid.Auction.ProductImages = Buffer.from(bid.Auction.ProductImages).toString('base64');
+            delete bid.CreatedTime;
         })
 
-        res.statusCode(200)
+        res.status(200)
             .json({
                 result: bids,
                 success: true
@@ -158,6 +198,10 @@ router.get("/auction/:auctionCode", auth, async (req, res, next) => {
                         EmailID: true
                     }
                 },
+                CreatedTime: true
+            },
+            orderBy: {
+                CreatedTime: "desc"
             }
         });
 
@@ -168,6 +212,7 @@ router.get("/auction/:auctionCode", auth, async (req, res, next) => {
                 bid.User.IsCurrentUser = false;
 
             delete bid.User.EmailID;
+            delete bid.CreatedTime;
         })
 
         res.status(200)

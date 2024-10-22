@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { fileTypeFromBuffer } from 'file-type'
 
 export function ValidateString(string, validations, errorMessage) {
     if (validations === null || validations === undefined) {
@@ -33,8 +34,24 @@ export function getRemainingTime(date) {
     // let seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
     if (days < 0) {
-        return 'Closed';
+        return "Closed";
     }
 
     return `${days} days ${hours} hrs ${minutes} minutes`
+}
+
+export async function fetchFileInfo(fileDataInBase64) {
+    try {
+        const bytes = atob(fileDataInBase64);
+        const byteNums = new Uint8Array(bytes.length);
+        for (let i = 0; i < bytes.length; i++) {
+            byteNums[i] = bytes.charCodeAt(i);
+        }
+
+        const type = await fileTypeFromBuffer(byteNums);
+        return type.mime ? type.mime : 'unknown';
+    }
+    catch (error) {
+        console.log("Error finding file info: ", error);
+    }
 }

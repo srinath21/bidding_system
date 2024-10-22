@@ -1,7 +1,7 @@
 import React from "react";
 import ErrorBoundary from "../ErrorBoundary";
 import { Box, Grid2 as Grid, List, ListItem, ListItemText, Chip, Typography, Button, Backdrop, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, InputAdornment, Divider, DialogActions, IconButton } from "@mui/material";
-import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
+import { Link, useParams, useNavigate, Navigate, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
 import { Close } from "@mui/icons-material";
@@ -32,6 +32,8 @@ const bidInfoObj = {
 const BidDetails = (props) => {
     const { code } = useParams()
     const navigate = useNavigate();
+
+    const previousLocationPath = useLocation().state ? useLocation().state.previousLocationPath : "/";
 
     const [auctionInfo, setAuctionInfo] = React.useState(null);
     const [bids, setBids] = React.useState([]);
@@ -192,7 +194,7 @@ const BidDetails = (props) => {
                         <Box sx={{ flexGrow: 1, mt: 2 }}>
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12 }}>
-                                    <Link to={"/"}>Back to catalog</Link>
+                                    <Link to={previousLocationPath}>Back to catalog</Link>
                                 </Grid>
                                 {auctionInfo ?
                                     <>

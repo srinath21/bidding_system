@@ -66,6 +66,8 @@ const Login = (props) => {
                     setLoading(false);
                     if (response.data.success) {
                         props.onLogin(response.data.result)
+                        if (keepUserSignedIn)
+                            localStorage.setItem("tokenDetails", JSON.stringify(response.data.result));
                         navigate("/");
                     }
                     else {

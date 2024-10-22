@@ -88,7 +88,14 @@ const NavItems = (props) => {
                                 })}
                             >
                                 {page.subPages.map((subPage) => (
-                                    <MenuItem key={subPage.Name} onClick={() => { navigate(subPage.URL) }}>
+                                    <MenuItem key={subPage.Name} onClick={() => {
+                                        setIsMenuOpen({
+                                            ...isMenuOpen,
+                                            [page.Name]: false
+                                        });
+                                        setAnchorElPage(null);
+                                        navigate(subPage.URL)
+                                    }}>
                                         <Typography sx={{ textAlign: 'center' }}>{subPage.Name}</Typography>
                                     </MenuItem>
                                 ))}

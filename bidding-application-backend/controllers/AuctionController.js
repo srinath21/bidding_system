@@ -88,9 +88,25 @@ router.get("/", auth, async (req, res, next) => {
             delete auction.UserID;
         });
 
+        const maxBids = await prisma.bid.groupBy({
+            by: ["AuctionCode"],
+            _max: {
+                StraightBidAmount: true
+            }
+        })
+
+        let auctionsWithMaxBid = auctions.map((auction) => {
+            const maxBid = maxBids.find(bid => bid.AuctionCode === auction.Code);
+
+            return {
+                ...auction,
+                CurrentBid: maxBid ? maxBid._max.StraightBidAmount : 0
+            }
+        });
+
         res.status(200)
             .json({
-                result: auctions,
+                result: auctionsWithMaxBid,
                 success: true
             });
     }

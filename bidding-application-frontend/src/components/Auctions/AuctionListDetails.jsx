@@ -53,9 +53,12 @@ const AuctionListDetails = (props) => {
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Button variant='contained' fullWidth onClick={() => navigate(
-                                            props.isBiddable ? `/bid/${auction.Code}` : `/auctions/auction/${auction.Code}`
-                                        )}>
+                                        <Button variant='contained' disabled={props.isBiddable && remainingTime === "Closed"} fullWidth onClick={() => navigate(
+                                            props.isBiddable ? `/auctions/auction/bid/${auction.Code}` : `/auctions/auction/${auction.Code}`, {
+                                            state: {
+                                                previousLocationPath: location.pathname
+                                            }
+                                        })}>
                                             {
                                                 props.isBiddable ?
                                                     "Bid Now" :

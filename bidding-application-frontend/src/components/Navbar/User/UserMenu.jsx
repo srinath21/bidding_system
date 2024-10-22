@@ -53,20 +53,29 @@ const UserMenu = (props) => {
                     </div>
                 </div>
                 {props.items.profileSettings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                        <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                    <MenuItem key={setting.Name} onClick={() => {
+                        handleCloseUserMenu();
+                        navigate(setting.URL);
+                    }}>
+                        <Typography sx={{ textAlign: 'center' }}>{setting.Name}</Typography>
                     </MenuItem>
                 ))}
                 <Divider />
                 {props.items.transactionSettings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                        <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                    <MenuItem key={setting.Name} onClick={() => {
+                        handleCloseUserMenu();
+                        navigate(setting.URL);
+                    }}>
+                        <Typography sx={{ textAlign: 'center' }}>{setting.Name}</Typography>
                     </MenuItem>
                 ))}
                 <Divider />
                 {props.items.miscellaneousSettings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                        <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                    <MenuItem key={setting.Name} onClick={() => {
+                        handleCloseUserMenu();
+                        navigate(setting.URL);
+                    }}>
+                        <Typography sx={{ textAlign: 'center' }}>{setting.Name}</Typography>
                     </MenuItem>
                 ))}
                 <Divider />

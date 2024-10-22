@@ -1,12 +1,20 @@
 import * as actionTypes from '../actions/actionTypes'
 
-const initState = {
-    token: null,
-    emailID: null,
-    firstName: null,
-    lastName: null,
-    isAuth: false
-};
+const initState = localStorage.getItem("tokenDetails") !== null ?
+    {
+        token: JSON.parse(localStorage.getItem("tokenDetails")).authToken,
+        emailID: JSON.parse(localStorage.getItem("tokenDetails")).emailID,
+        firstName: JSON.parse(localStorage.getItem("tokenDetails")).firstName,
+        lastName: JSON.parse(localStorage.getItem("tokenDetails")).lastName,
+        isAuth: true
+    } :
+    {
+        token: null,
+        emailID: null,
+        firstName: null,
+        lastName: null,
+        isAuth: false
+    };
 
 const userReducer = (state = initState, action) => {
     switch (action.type) {
