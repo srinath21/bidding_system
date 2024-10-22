@@ -260,7 +260,6 @@ router.post("/user/changepassword", auth, async (req, res, next) => {
 
         res.status(200)
             .json({
-                result: updateUser,
                 success: true
             })
     }
