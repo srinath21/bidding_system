@@ -198,6 +198,10 @@ router.patch("/", auth, async (req, res, next) => {
             }
         });
 
+        delete userUpdated.ID;
+        delete userUpdated.Password;
+        delete userUpdated.CreatedTime;
+
         return res.status(200)
             .json({
                 result: userUpdated,
