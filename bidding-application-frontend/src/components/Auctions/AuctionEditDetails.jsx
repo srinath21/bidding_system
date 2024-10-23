@@ -25,7 +25,7 @@ const AuctionEditDetails = (props) => {
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
                         <Typography variant='h4' sx={{ mb: 2 }}>
-                            {props.modAuctionInfo.productName.value !== "" ? props.modAuctionInfo.productName.value : "Start a New Auction"}
+                            {props.auctionInfo.productName.value !== "" ? props.auctionInfo.productName.value : "Start a New Auction"}
                         </Typography>
                     </Grid>
                     <Grid size={{ xs: 12, lg: 6 }}>

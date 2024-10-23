@@ -8,81 +8,50 @@ import dayjs from "dayjs";
 import { Backdrop, CircularProgress } from "@mui/material";
 import ErrorBoundary from "../ErrorBoundary";
 import { NavLink } from "react-router-dom";
+import * as lodash from 'lodash';
+
+const auctionInfoObj = {
+    productName: {
+        error: null,
+        value: '',
+        validations: {
+            minLength: 1,
+            maxLength: 200
+        }
+    },
+    productDescription: {
+        error: null,
+        value: '',
+        validations: {
+            minLength: 1,
+            maxLength: 500
+        }
+    },
+    minAmount: {
+        error: null,
+        value: '',
+        validations: {
+            minVal: 1,
+            maxVal: 400000,
+            expression: /^[+-]?(\d*\.)?\d+$/
+        }
+    },
+    closeDate: {
+        error: null,
+        value: null,
+    },
+    productImages: {
+        error: null,
+        value: null
+    }
+}
 
 const Auction = (props) => {
     const navigate = useNavigate();
     const { code } = useParams();
-    const [auctionInfo, setAuctionInfo] = React.useState({
-        productName: {
-            error: null,
-            value: '',
-            validations: {
-                minLength: 1,
-                maxLength: 200
-            }
-        },
-        productDescription: {
-            error: null,
-            value: '',
-            validations: {
-                minLength: 1,
-                maxLength: 500
-            }
-        },
-        minAmount: {
-            error: null,
-            value: '',
-            validations: {
-                minVal: 1,
-                maxVal: 400000,
-                expression: /^[+-]?(\d*\.)?\d+$/
-            }
-        },
-        closeDate: {
-            error: null,
-            value: null,
-        },
-        productImages: {
-            error: null,
-            value: null
-        }
-    });
+    const [auctionInfo, setAuctionInfo] = React.useState({});
     const [isLoading, setIsLoading] = React.useState(false);
-    const [modifiedAuctionInfo, setModifiedAuctionInfo] = React.useState({
-        productName: {
-            error: null,
-            value: '',
-            validations: {
-                minLength: 1,
-                maxLength: 200
-            }
-        },
-        productDescription: {
-            error: null,
-            value: '',
-            validations: {
-                minLength: 1,
-                maxLength: 500
-            }
-        },
-        minAmount: {
-            error: null,
-            value: '',
-            validations: {
-                minVal: 1,
-                maxVal: 400000,
-                expression: /^[+-]?(\d*\.)?\d+$/
-            }
-        },
-        closeDate: {
-            error: null,
-            value: null,
-        },
-        productImages: {
-            error: null,
-            value: null
-        }
-    });
+    const [modifiedAuctionInfo, setModifiedAuctionInfo] = React.useState({});
     const [isCreate, setIsCreate] = React.useState(true);
     const [error, setError] = React.useState(null);
     const [isFetchingAuctionData, setIsFetchingAuctionData] = React.useState(false);
@@ -94,56 +63,66 @@ const Auction = (props) => {
                 return;
             }
 
-            if (code) {
-                setIsCreate(false);
-                setIsFetchingAuctionData(true);
-                axios.get(`http://localhost:3000/api/auctions/auction/${code}`, {
-                    headers: {
-                        'Authorization': 'Bearer ' + props.userDetails.token
-                    }
-                }).then(response => {
-                    if (response.data.success) {
-                        let modAuctionInfo = {
-                            productName: {
-                                ...auctionInfo.productName,
-                                value: response.data.result.ProductName
-                            },
-                            productDescription: {
-                                ...auctionInfo.productDescription,
-                                value: response.data.result.ProductDescription,
-                            },
-                            productImages: {
-                                ...auctionInfo.productImages,
-                                value: response.data.result.ProductImages
-                            },
-                            closeDate: {
-                                ...auctionInfo.closeDate,
-                                value: dayjs(response.data.result.CloseTime)
-                            },
-                            minAmount: {
-                                ...auctionInfo.minAmount,
-                                value: response.data.result.MinimumAmount
-                            }
-                        }
-                        setAuctionInfo(modAuctionInfo);
-                        setModifiedAuctionInfo(modAuctionInfo);
-                    }
-                    else {
-                        console.log("Error in Auction details: ", error)
-                    }
-                    setIsFetchingAuctionData(false)
-                }).catch(error => {
-                    console.log("Error fetching Auction details: ", error);
-                })
-            }
-            else {
-                setIsCreate(true)
-            }
+            getAuctionDetails();
         }
         catch (error) {
             console.log("Error in componentDidMount useEffect: ", error);
         }
     }, []);
+
+    const getAuctionDetails = () => {
+        if (code) {
+            setIsCreate(false);
+            setIsFetchingAuctionData(true);
+            axios.get(`http://localhost:3000/api/auctions/auction/${code}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + props.userDetails.token
+                }
+            }).then(response => {
+                if (response.data.success) {
+                    let modAuctionInfo = {
+                        productName: {
+                            ...auctionInfo.productName,
+                            value: response.data.result.ProductName
+                        },
+                        productDescription: {
+                            ...auctionInfo.productDescription,
+                            value: response.data.result.ProductDescription,
+                        },
+                        productImages: {
+                            ...auctionInfo.productImages,
+                            value: response.data.result.ProductImages
+                        },
+                        closeDate: {
+                            ...auctionInfo.closeDate,
+                            value: dayjs(response.data.result.CloseTime)
+                        },
+                        minAmount: {
+                            ...auctionInfo.minAmount,
+                            value: response.data.result.MinimumAmount
+                        }
+                    }
+                    setAuctionInfo(modAuctionInfo);
+                    setModifiedAuctionInfo(modAuctionInfo);
+                }
+                else {
+                    console.log("Error in Auction details: ", error)
+                }
+                setIsFetchingAuctionData(false)
+            }).catch(error => {
+                console.log("Error fetching Auction details: ", error);
+            })
+        }
+        else {
+            setIsCreate(true)
+            setAuctionInfo(lodash.cloneDeep(auctionInfoObj));
+            setModifiedAuctionInfo(lodash.cloneDeep(auctionInfoObj));
+        }
+    }
+
+    React.useEffect(() => {
+        getAuctionDetails();
+    }, [code])
 
     const handleChange = (key, value) => {
         try {
