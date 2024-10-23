@@ -43,6 +43,8 @@ router.post("/", auth, async (req, res, next) => {
         delete auction.ID;
         delete auction.UserID;
 
+        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+
         res.status(201)
             .json({
                 result: auction,
@@ -135,6 +137,8 @@ router.get("/all", optional, async (req, res, next) => {
             await prisma.auction.findMany({});
 
         auctions.forEach(auction => {
+            auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+
             delete auction.ID;
             delete auction.UserID;
         })
@@ -209,6 +213,8 @@ router.patch("/auction/:auctionCode", auth, async (req, res, next) => {
         delete auction.ID;
         delete auction.UserID;
 
+        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+
         res.status(201)
             .json({
                 result: auction,
@@ -253,6 +259,8 @@ router.delete("/auction/:auctionCode", auth, async (req, res, next) => {
 
         delete auction.ID;
         delete auction.UserID;
+
+        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
 
         res.status(200)
             .json({
@@ -307,6 +315,8 @@ router.get("/auction/:auctionCode", auth, async (req, res, next) => {
         if (bid) {
             auction.CurrentBid = bid.StraightBidAmount;
         }
+
+        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
 
         delete auction.ID;
         delete auction.UserID;
