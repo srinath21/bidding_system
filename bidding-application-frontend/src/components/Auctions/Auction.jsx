@@ -82,23 +82,23 @@ const Auction = (props) => {
                 if (response.data.success) {
                     let modAuctionInfo = {
                         productName: {
-                            ...auctionInfo.productName,
+                            ...auctionInfoObj.productName,
                             value: response.data.result.ProductName
                         },
                         productDescription: {
-                            ...auctionInfo.productDescription,
+                            ...auctionInfoObj.productDescription,
                             value: response.data.result.ProductDescription,
                         },
                         productImages: {
-                            ...auctionInfo.productImages,
+                            ...auctionInfoObj.productImages,
                             value: response.data.result.ProductImages
                         },
                         closeDate: {
-                            ...auctionInfo.closeDate,
+                            ...auctionInfoObj.closeDate,
                             value: dayjs(response.data.result.CloseTime)
                         },
                         minAmount: {
-                            ...auctionInfo.minAmount,
+                            ...auctionInfoObj.minAmount,
                             value: response.data.result.MinimumAmount
                         }
                     }
