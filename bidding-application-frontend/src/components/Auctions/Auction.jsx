@@ -312,7 +312,7 @@ const Auction = (props) => {
     return (
         (
             props.userDetails.isAuth ?
-                (isFetchingAuctionData ?
+                (isFetchingAuctionData || Object.keys(auctionInfo).length === 0 || Object.keys(modifiedAuctionInfo).length === 0 ?
                     <Backdrop
                         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
                         open={isFetchingAuctionData}
