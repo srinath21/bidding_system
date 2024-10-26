@@ -339,7 +339,7 @@ const BidDetails = (props) => {
                                 </Grid>
                                 <Grid size={12} sx={{ my: 2 }}>
                                     <Typography variant="body2">
-                                        Ends in: {new Date(auctionInfo.CloseTime).toLocaleDateString()}
+                                        Ends in: {getRemainingTime(auctionInfo.CloseTime)}
                                     </Typography>
                                 </Grid>
                             </DialogContent>
