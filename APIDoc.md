@@ -123,7 +123,8 @@ This endpoint allows user to change the account password.
 {
   "FirstName": "test1",
   "LastName": "test1",
-  "EmailID": "test@test.com"
+  "EmailID": "test@test.com",
+  "EmailSubscription": false,
 }
 ```
 
@@ -227,7 +228,9 @@ This API fetches all the available auctions specific to the user (that the user 
         "Code":2,
         "ProductName":"adfadadfa",
         "ProductDescription":"asdfds",
-        "ProductImages":"",
+        "ProductImageName":"test.jpg",
+        "ProductImages":"api/auctions/auction/2/image",
+        "ProductImageFileType":"image/jpeg",
         "CloseTime":"2024-10-30T18:30:00.000Z",
         "MinimumAmount":"213",
         "CreatedTime":"2024-10-21T13:52:09.316Z",
@@ -259,7 +262,9 @@ This API allows user to create an auction for a product
     "Code":6,
     "ProductName":"Product 5",
     "ProductDescription":"Product 5 Description",
-    "ProductImages":"",
+    "ProductImageName":"test.jpg",
+    "ProductImages":"api/auctions/auction/2/image",
+    "ProductImageFileType":"image/jpeg",
     "CloseTime":"2024-10-26T18:30:00.000Z",
     "MinimumAmount":"100",
     "CreatedTime":"2024-10-23T18:03:04.067Z"
@@ -287,7 +292,9 @@ This API allows user to fetch the auction details for a product
     "Code":3,
     "ProductName":"Product 2",
     "ProductDescription":"Product 2 Description",
-    "ProductImages":"",
+    "ProductImageName":"test.jpg",
+    "ProductImages":"api/auctions/auction/2/image",
+    "ProductImageFileType":"image/jpeg", 
     "CloseTime":"2024-10-30T19:30:00.000Z",
     "MinimumAmount":"500",
     "CreatedTime":"2024-10-23T17:39:46.396Z"
@@ -316,7 +323,9 @@ This API allows user to update the auction details for a product
     "Code":6,
     "ProductName":"Product 5",
     "ProductDescription":"Product 5 Description",
-    "ProductImages":"",
+    "ProductImageName":"test.jpg",
+    "ProductImages":"api/auctions/auction/2/image",
+    "ProductImageFileType":"image/jpeg",
     "CloseTime":"2024-10-26T18:30:00.000Z",
     "MinimumAmount":"100",
     "CreatedTime":"2024-10-23T18:03:04.067Z"
@@ -409,7 +418,9 @@ This API fetches all the bids placed by the user
         "Code": 2,
         "ProductName": "adfadadfa",
         "ProductDescription": "asdfds",
-        "ProductImages": "",
+        "ProductImageName":"test.jpg",
+        "ProductImages":"api/auctions/auction/2/image",
+        "ProductImageFileType":"image/jpeg",
         "MinimumAmount": "213",
         "CloseTime": "2024-10-30T18:30:00.000Z"
       }
@@ -421,7 +432,9 @@ This API fetches all the bids placed by the user
         "Code": 2,
         "ProductName": "adfadadfa",
         "ProductDescription": "asdfds",
-        "ProductImages": "",
+        "ProductImageName":"test.jpg",
+        "ProductImages":"api/auctions/auction/2/image",
+        "ProductImageFileType":"image/jpeg",
         "MinimumAmount": "213",
         "CloseTime": "2024-10-30T18:30:00.000Z"
       }
