@@ -215,7 +215,7 @@ const BidDetails = (props) => {
                                                 Ends in: {getRemainingTime(auctionInfo.CloseTime)}
                                             </Typography>
                                         </Grid>
-                                        <Grid size={{ lg: 8 }}>
+                                        <Grid size={{ xs: 12, md: 4, lg: 7 }}>
                                             <Typography variant="h6">
                                                 Description
                                             </Typography>
@@ -223,7 +223,7 @@ const BidDetails = (props) => {
                                                 {auctionInfo.ProductDescription}
                                             </Typography>
                                         </Grid>
-                                        <Grid size={{ lg: 2 }}>
+                                        <Grid size={{ xs: 12, md: 4, lg: 2 }}>
                                             {
                                                 bids.length > 0 ?
                                                     <List dense={true} sx={{ width: "100%", mb: 3 }}>

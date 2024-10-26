@@ -57,7 +57,7 @@ function App() {
   return (
     <>
       <Navbar menu={pages} userMenu={settings} />
-      <Container fixed disableGutters={true}>
+      <Container fixed disableGutters={true} sx={{ my: 2 }}>
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/about" Component={About} />
