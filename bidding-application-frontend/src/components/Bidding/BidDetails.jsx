@@ -38,7 +38,7 @@ const BidDetails = (props) => {
     const [auctionInfo, setAuctionInfo] = React.useState(null);
     const [bids, setBids] = React.useState([]);
 
-    const [fetchingAuctionData, setFetchingAuctionData] = React.useState(false);
+    const [fetchingAuctionData, setFetchingAuctionData] = React.useState(true);
     const [openBidDialog, setOpenBidDialog] = React.useState(false);
 
     const [bidInfo, setBidInfo] = React.useState({ ...bidInfoObj });

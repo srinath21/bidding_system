@@ -4,6 +4,7 @@ import ErrorBoundary from '../ErrorBoundary';
 import { ArrowForwardIos } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { getRemainingTime } from '../../utilities/UtilityFunction';
+import PropTypes from 'prop-types';
 
 const AuctionListDetails = (props) => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const AuctionListDetails = (props) => {
                     let remainingTime = getRemainingTime(auction.CloseTime)
                     let chipColor = (remainingTime !== "Closed" ? "green" : "red")
                     return (
-                        <Grid size={{ xs: 12, md: 6, lg: 4, xl: 3 }} sx={{ pb: 2 }}>
+                        <Grid key={auction.Code} size={{ xs: 12, md: 6, lg: 4, xl: 3 }} sx={{ pb: 2 }}>
                             <ErrorBoundary>
                                 <Card variant='outlined'>
                                     <CardContent>
@@ -75,6 +76,21 @@ const AuctionListDetails = (props) => {
                 }) : <Typography variant='h6'>No Auctions Found!</Typography>}
         </ErrorBoundary>
     )
+}
+
+AuctionListDetails.propTypes = {
+    auctions: PropTypes.arrayOf(PropTypes.objectOf({
+        Code: PropTypes.number.isRequired,
+        ProductName: PropTypes.string.isRequired,
+        MinimumAmount: PropTypes.number.isRequired,
+        CloseTime: PropTypes.string.isRequired,
+        CurrentBid: PropTypes.number
+    })),
+    isBiddable: PropTypes.bool.isRequired
+};
+
+AuctionListDetails.defaultProps = {
+    isBiddable: false
 }
 
 export default AuctionListDetails;

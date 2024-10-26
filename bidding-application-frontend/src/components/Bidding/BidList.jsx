@@ -95,8 +95,8 @@ const BidList = (props) => {
                                                         </Grid>
                                                     </Box>
                                                 </CardContent>
-                                                <CardActions>
-                                                    <Button variant='contained' sx={{ float: "right" }} disabled={props.isBiddable && remainingTime === "Closed"} onClick={() => navigate(
+                                                <CardActions sx={{ float: "right" }}>
+                                                    <Button variant='contained' disabled={remainingTime === "Closed"} onClick={() => navigate(
                                                         `/auctions/auction/bid/${bid.Auction.Code}`, {
                                                         state: {
                                                             previousLocationPath: location.pathname

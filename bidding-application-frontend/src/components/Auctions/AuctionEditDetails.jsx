@@ -5,6 +5,7 @@ import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import React from 'react';
 import ErrorBoundary from '../ErrorBoundary';
+import PropTypes from 'prop-types';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -186,6 +187,29 @@ const AuctionEditDetails = (props) => {
             </Box>
         </ErrorBoundary>
     )
+}
+
+AuctionEditDetails.propTypes = {
+    error: PropTypes.string,
+    loading: PropTypes.bool,
+    handleDeleteClick: PropTypes.func,
+    handleUpdateClick: PropTypes.func,
+    handleCreateClick: PropTypes.func,
+    isCreate: PropTypes.bool.isRequired,
+    auctionInfo: PropTypes.objectOf({
+        productName: PropTypes.object.isRequired,
+        productDescription: PropTypes.object.isRequired,
+        minAmount: PropTypes.object.isRequired,
+        closeDate: PropTypes.object.isRequired,
+        productImages: PropTypes.object.isRequired
+    }).isRequired,
+    modAuctionInfo: PropTypes.objectOf({
+        productName: PropTypes.object.isRequired,
+        productDescription: PropTypes.object.isRequired,
+        minAmount: PropTypes.object.isRequired,
+        closeDate: PropTypes.object.isRequired,
+        productImages: PropTypes.object.isRequired
+    }).isRequired
 }
 
 export default AuctionEditDetails;
