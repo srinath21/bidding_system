@@ -21,17 +21,19 @@ model User {
 }
 
 model Auction {
-  ID                 String   @id @default(uuid())
-  Code               Int      @unique @default(autoincrement())
-  User               User     @relation(fields: [UserID], references: [ID])
-  UserID             String
-  ProductName        String   @db.VarChar(200)
-  ProductDescription String   @db.Text
-  ProductImages      Bytes    @db.ByteA
-  CloseTime          DateTime @db.Timestamptz()
-  MinimumAmount      Decimal  @db.Decimal(18, 6)
-  CreatedTime        DateTime @default(now()) @db.Timestamptz()
-  Bid                Bid[]
+  ID                   String   @id @default(uuid())
+  Code                 Int      @unique @default(autoincrement())
+  User                 User     @relation(fields: [UserID], references: [ID])
+  UserID               String
+  ProductName          String   @db.VarChar(200)
+  ProductDescription   String   @db.Text
+  ProductImageName     String   @db.Text
+  ProductImages        Bytes    @db.ByteA
+  ProductImageFileType String   @db.Text
+  CloseTime            DateTime @db.Timestamptz()
+  MinimumAmount        Decimal  @db.Decimal(18, 6)
+  CreatedTime          DateTime @default(now()) @db.Timestamptz()
+  Bid                  Bid[]
 }
 
 model Bid {

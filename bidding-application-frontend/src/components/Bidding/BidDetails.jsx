@@ -7,6 +7,7 @@ import axios from "axios";
 import { Close } from "@mui/icons-material";
 import { getRemainingTime, ValidateString } from "../../utilities/UtilityFunction";
 import dayjs from "dayjs";
+import Image from "../Image";
 
 const bidInfoObj = {
     straightBid: {
@@ -198,9 +199,9 @@ const BidDetails = (props) => {
                                 </Grid>
                                 {auctionInfo ?
                                     <>
-                                        <Grid size={{ lg: 2 }}>
-                                            <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e" alt='Image' height={250} style={{ width: "100%" }} />
-                                            <Chip label="Live Auction" size='small' sx={{ my: 1 }} />
+                                        <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+                                            <Image imageUrl={`http://localhost:3000/${auctionInfo.ProductImages}`} imageHeight={250} imageWidth={100} />
+                                            <Chip label="Live Auction" size='small' sx={{ my: 1, background: getRemainingTime(auctionInfo.CloseTime) !== "Closed" ? "green" : "red" }} />
                                             <Typography variant='h6'>
                                                 {auctionInfo.ProductName}
                                             </Typography>

@@ -6,6 +6,7 @@ import { Navigate, useNavigate } from "react-router";
 import { connect } from "react-redux";
 import { ArrowForwardIos } from "@mui/icons-material";
 import { getRemainingTime } from "../../utilities/UtilityFunction";
+import Image from "../Image";
 
 const BidList = (props) => {
     const navigate = useNavigate();
@@ -90,7 +91,7 @@ const BidList = (props) => {
                                                                 </Typography>
                                                             </Grid>
                                                             <Grid size={{ xs: 12, lg: 2 }}>
-                                                                <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e" alt='Image' height={100} style={{ width: "100%" }} />
+                                                                <Image imageUrl={`http://localhost:3000/${bid.Auction.ProductImages}`} imageHeight={100} imageWidth={100} />
                                                             </Grid>
                                                         </Grid>
                                                     </Box>

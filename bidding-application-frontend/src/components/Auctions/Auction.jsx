@@ -78,8 +78,14 @@ const Auction = (props) => {
                 headers: {
                     'Authorization': 'Bearer ' + props.userDetails.token
                 }
-            }).then(response => {
+            }).then(async (response) => {
                 if (response.data.success) {
+                    // load image and convert to javascript file object
+                    let imageBlob = await fetch(`http://localhost:3000/${response.data.result.ProductImages}`).then(r => r.blob());
+                    const file = new File([imageBlob], response.data.result.ProductImageName, {
+                        type: response.data.result.ProductImageFileType
+                    });
+
                     let modAuctionInfo = {
                         productName: {
                             ...auctionInfoObj.productName,
@@ -91,7 +97,7 @@ const Auction = (props) => {
                         },
                         productImages: {
                             ...auctionInfoObj.productImages,
-                            value: response.data.result.ProductImages
+                            value: file
                         },
                         closeDate: {
                             ...auctionInfoObj.closeDate,
@@ -281,6 +287,8 @@ const Auction = (props) => {
                 else if (key === "productImages") {
                     if (modAuctionInfo[key].value === null)
                         error = "Please provide an image file for the item"
+                    else if (modAuctionInfo[key].value.size / 1024 / 1024 > 5)
+                        error = "File size cannot exceed 5MB"
                     else if (!['image/jpeg', 'image/png'].includes(modAuctionInfo[key].value.type))
                         error = "Only JPEG or PNG file is allowed";
                     else
@@ -290,7 +298,7 @@ const Auction = (props) => {
                     error = ValidateString(modAuctionInfo[key].value, modAuctionInfo[key].validations)
                 }
 
-                if (modAuctionInfo[key].error !== null)
+                if (error !== null)
                     isValid = false
 
                 modAuctionInfo[key] = {

@@ -5,6 +5,7 @@ import { ArrowForwardIos } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { getRemainingTime } from '../../utilities/UtilityFunction';
 import PropTypes from 'prop-types';
+import Image from '../Image';
 
 const AuctionListDetails = (props) => {
     const navigate = useNavigate();
@@ -35,7 +36,11 @@ const AuctionListDetails = (props) => {
                             <ErrorBoundary>
                                 <Card variant='outlined'>
                                     <CardContent>
-                                        <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e" alt='Image' height={300} style={{ width: "100%" }} />
+                                        <Image
+                                            imageUrl={`http://localhost:3000/${auction.ProductImages}`}
+                                            imageHeight={300}
+                                            imageWidth={100}
+                                        />
                                         <Chip
                                             label={remainingTime !== "Closed" ? "Live Auction" : "Closed"}
                                             size='small'

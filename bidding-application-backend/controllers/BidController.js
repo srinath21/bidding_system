@@ -145,7 +145,7 @@ router.get("/all", auth, async (req, res, next) => {
         });
 
         bids.forEach(bid => {
-            bid.Auction.ProductImages = Buffer.from(bid.Auction.ProductImages).toString('base64');
+            bid.Auction.ProductImages = `api/auctions/auction/${bid.Auction.Code}/image`;
             delete bid.CreatedTime;
         })
 

@@ -34,6 +34,8 @@ router.post("/", auth, async (req, res, next) => {
                 UserID: user.ID,
                 ProductName: ProductName,
                 ProductDescription: ProductDescription,
+                ProductImageName: ProductImages.name,
+                ProductImageFileType: ProductImages.mimetype,
                 ProductImages: ProductImages.data,
                 CloseTime: CloseTime,
                 MinimumAmount: MinimumAmount
@@ -43,7 +45,7 @@ router.post("/", auth, async (req, res, next) => {
         delete auction.ID;
         delete auction.UserID;
 
-        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+        auction.ProductImages = `api/auctions/auction/${auction.Code}/image`;
 
         res.status(201)
             .json({
@@ -86,6 +88,8 @@ router.get("/", auth, async (req, res, next) => {
         });
 
         auctions.forEach(auction => {
+            auction.ProductImages = `api/auctions/auction/${auction.Code}/image`;
+
             delete auction.ID;
             delete auction.UserID;
         });
@@ -137,7 +141,7 @@ router.get("/all", optional, async (req, res, next) => {
             await prisma.auction.findMany({});
 
         auctions.forEach(auction => {
-            auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+            auction.ProductImages = `api/auctions/auction/${auction.Code}/image`;
 
             delete auction.ID;
             delete auction.UserID;
@@ -200,7 +204,9 @@ router.patch("/auction/:auctionCode", auth, async (req, res, next) => {
             data: {
                 ProductName: ProductName,
                 ProductDescription: ProductDescription,
-                ProductImages: ProductImages.arrayBuffer,
+                ProductImages: ProductImages.data,
+                ProductImageName: ProductImages.name,
+                ProductImageFileType: ProductImages.mimetype,
                 CloseTime: CloseTime,
                 MinimumAmount: MinimumAmount
             },
@@ -213,7 +219,7 @@ router.patch("/auction/:auctionCode", auth, async (req, res, next) => {
         delete auction.ID;
         delete auction.UserID;
 
-        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+        auction.ProductImages = `api/auctions/auction/${auctionCode}/image`;
 
         res.status(201)
             .json({
@@ -260,7 +266,7 @@ router.delete("/auction/:auctionCode", auth, async (req, res, next) => {
         delete auction.ID;
         delete auction.UserID;
 
-        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+        auction.ProductImages = `api/auctions/auction/${auctionCode}/image`;
 
         res.status(200)
             .json({
@@ -316,7 +322,7 @@ router.get("/auction/:auctionCode", auth, async (req, res, next) => {
             auction.CurrentBid = bid.StraightBidAmount;
         }
 
-        auction.ProductImages = Buffer.from(auction.ProductImages).toString('base64');
+        auction.ProductImages = `api/auctions/auction/${auctionCode}/image`;
 
         delete auction.ID;
         delete auction.UserID;
@@ -336,5 +342,27 @@ router.get("/auction/:auctionCode", auth, async (req, res, next) => {
             })
     }
 });
+
+router.get("/auction/:auctionCode/image", optional, async (req, res, next) => {
+    const auctionCode = req.params.auctionCode;
+    try {
+        const auction = await prisma.auction.findUniqueOrThrow({
+            where: {
+                Code: parseInt(auctionCode),
+            }
+        });
+
+        res.setHeader("Content-Type", auction.ProductImageFileType);
+        res.send(auction.ProductImages);
+    }
+    catch (error) {
+        console.log("Error in fetching the image: ", error);
+        res.status(200)
+            .json({
+                error: "Something went wrong!",
+                success: false
+            })
+    }
+})
 
 module.exports = router;

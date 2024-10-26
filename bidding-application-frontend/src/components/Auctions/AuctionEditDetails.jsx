@@ -20,6 +20,20 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const AuctionEditDetails = (props) => {
+    const downloadFile = (fileData) => {
+        try {
+            const link = document.createElement('a');
+            link.download = fileData.name;
+            link.href = URL.createObjectURL(fileData);
+
+            link.click();
+            link.remove();
+        }
+        catch (error) {
+            console.log("Error downloading the file: ", fileData)
+        }
+    }
+
     return (
         <ErrorBoundary>
             <Box sx={{ flexGrow: 1, my: 2 }}>
@@ -113,7 +127,12 @@ const AuctionEditDetails = (props) => {
                             </Button>
                             {
                                 props.modAuctionInfo.productImages.value !== null ?
-                                    <Chip label={props.modAuctionInfo.productImages.value.name} sx={{ ml: 2 }} variant="outlined" onDelete={(e) => props.handleChange("productImages", null)} />
+                                    <Chip
+                                        label={props.modAuctionInfo.productImages.value.name}
+                                        sx={{ ml: 2 }}
+                                        onClick={(e) => downloadFile(props.modAuctionInfo.productImages.value)}
+                                        variant="outlined"
+                                        onDelete={(e) => props.handleChange("productImages", null)} />
                                     : null
                             }
                             {
