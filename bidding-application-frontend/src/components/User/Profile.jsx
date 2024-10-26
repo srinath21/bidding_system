@@ -123,6 +123,7 @@ const Profile = (props) => {
                     FirstName: userInfo.firstName.value,
                     LastName: userInfo.lastName.value,
                     EmailID: userInfo.email.value,
+                    EmailSubscription: emailSubscription
                 }, {
                     headers: {
                         'Authorization': 'Bearer ' + props.userDetails.token
@@ -198,7 +199,7 @@ const Profile = (props) => {
                                     }
                                     <Grid size={12} sx={{ my: 2 }}>
                                         <FormControlLabel
-                                            control={<Checkbox value={emailSubscription} onClick={(event) => { setEmailSubscription(!emailSubscription) }} />}
+                                            control={<Checkbox checked={emailSubscription} onClick={(event) => { setEmailSubscription(!emailSubscription) }} />}
                                             label="Receive outbid emails"
                                         />
                                     </Grid>
