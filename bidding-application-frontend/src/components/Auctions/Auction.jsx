@@ -53,7 +53,7 @@ const Auction = (props) => {
     const [isLoading, setIsLoading] = React.useState(false);
     const [modifiedAuctionInfo, setModifiedAuctionInfo] = React.useState({});
     const [isCreate, setIsCreate] = React.useState(true);
-    const [error, setError] = React.useState(null);
+    const [message, setMessage] = React.useState(null);
     const [isFetchingAuctionData, setIsFetchingAuctionData] = React.useState(false);
 
     React.useEffect(() => {
@@ -189,19 +189,33 @@ const Auction = (props) => {
                     if (response.data.success) {
                         let code = response.data.result.Code;
                         navigate(`/auctions/auction/${code}`);
+                        setMessage({
+                            value: "Successfully Created the Auction",
+                            isError: false
+                        });
                     }
                     else {
-                        setError(response.data.error);
+                        setMessage({
+                            value: response.data.error,
+                            isError: true
+                        });
                     }
                     setIsLoading(false);
                 }).catch(error => {
-                    setError("Something went wrong!");
+                    setMessage({
+                        value: "Something went wrong!",
+                        isError: true
+                    });
                     setIsLoading(false);
                     console.log(error)
                 })
             }
         }
         catch (error) {
+            setMessage({
+                value: "Something went wrong!",
+                isError: true
+            });
             console.log("Error during creation of auction: ", error);
         }
     }
@@ -226,19 +240,35 @@ const Auction = (props) => {
                     if (response.data.success) {
                         let code = response.data.result.Code;
                         navigate(`/auctions/auction/${code}`);
+                        setMessage({
+                            value: "Successfully Updated the Auction",
+                            isError: false
+                        });
                     }
                     else {
                         setError(response.data.error);
+                        setMessage({
+                            value: response.data.error,
+                            isError: true
+                        });
                     }
                     setIsLoading(false);
                 }).catch(error => {
                     setError("Something went wrong!");
+                    setMessage({
+                        value: "Something went wrong!",
+                        isError: true
+                    });
                     setIsLoading(false);
                     console.log(error)
                 })
             }
         }
         catch (error) {
+            setMessage({
+                value: "Something went wrong!",
+                isError: true
+            });
             console.log("Error during creation of auction: ", error);
         }
     }
@@ -323,7 +353,7 @@ const Auction = (props) => {
                 (isFetchingAuctionData || Object.keys(auctionInfo).length === 0 || Object.keys(modifiedAuctionInfo).length === 0 ?
                     <Backdrop
                         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-                        open={isFetchingAuctionData}
+                        open={isFetchingAuctionData || Object.keys(auctionInfo).length === 0 || Object.keys(modifiedAuctionInfo).length === 0}
                     >
                         <CircularProgress color="inherit" />
                     </Backdrop>
@@ -340,7 +370,7 @@ const Auction = (props) => {
                                 handleUpdateClick={handleUpdate}
                                 handleDeleteClick={handleDelete}
                                 loading={isLoading}
-                                error={error}
+                                message={message}
                             />
                         </div>
                     </ErrorBoundary>

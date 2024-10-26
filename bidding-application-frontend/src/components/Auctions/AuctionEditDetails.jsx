@@ -1,5 +1,5 @@
 import { CloudUpload } from '@mui/icons-material';
-import { Typography, Grid2 as Grid, TextField, Box, Button, InputAdornment, Chip, CircularProgress } from '@mui/material';
+import { Typography, Grid2 as Grid, TextField, Box, Button, InputAdornment, Chip, CircularProgress, Backdrop } from '@mui/material';
 import { styled } from '@mui/material/styles'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -36,6 +36,12 @@ const AuctionEditDetails = (props) => {
 
     return (
         <ErrorBoundary>
+            <Backdrop
+                sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                open={props.loading}
+            >
+                <CircularProgress color='inherit' />
+            </Backdrop>
             <Box sx={{ flexGrow: 1, my: 2 }}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
@@ -150,57 +156,27 @@ const AuctionEditDetails = (props) => {
                                 <Button sx={{ float: "right" }} disabled={props.loading} variant='contained' onClick={props.handleCreateClick}>
                                     Create
                                 </Button>
-                                {props.loading &&
-                                    <CircularProgress
-                                        size={24}
-                                        sx={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '50%',
-                                            marginTop: '-12px',
-                                            marginLeft: '-12px',
-                                        }}
-                                    />
-                                }
                             </Box> :
                             <Box sx={{ display: "flex", float: "right" }}>
                                 <Box sx={{ position: "relative", mx: 2 }}>
                                     <Button sx={{ alignItems: "flex-start" }} disabled={props.loading} variant='contained' onClick={props.handleUpdateClick}>
                                         Update
                                     </Button>
-                                    {props.loading &&
-                                        <CircularProgress
-                                            size={24}
-                                            sx={{
-                                                position: 'absolute',
-                                                top: '50%',
-                                                left: '50%',
-                                                marginTop: '-12px',
-                                                marginLeft: '-12px',
-                                            }}
-                                        />
-                                    }
                                 </Box>
                                 <Box sx={{ position: "relative" }}>
                                     <Button sx={{ alignItems: "flex-end" }} disabled={props.loading} variant='contained' onClick={props.handleDeleteClick} color='error'>
                                         Delete
                                     </Button>
-                                    {props.loading &&
-                                        <CircularProgress
-                                            size={24}
-                                            sx={{
-                                                position: 'absolute',
-                                                top: '50%',
-                                                left: '50%',
-                                                marginTop: '-12px',
-                                                marginLeft: '-12px',
-                                            }}
-                                        />
-                                    }
                                 </Box>
                             </Box>
                         }
-                        {props.error ? <Typography variant="body2" sx={{ color: "red", width: "100%", textAlign: "center", mt: 1 }} >{props.error}</Typography> : null}
+                        {
+                            props.message ?
+                                <Typography variant="body2" sx={{ color: (props.message.isError ? "red" : "green"), width: "100%", textAlign: "center", mt: 1 }} >
+                                    {props.message.value}
+                                </Typography> :
+                                null
+                        }
                     </Grid>
                 </Grid>
             </Box>
