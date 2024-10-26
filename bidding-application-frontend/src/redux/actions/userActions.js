@@ -8,7 +8,7 @@ export const setAuthToken = (token) => {
 };
 
 export const logoutUser = () => {
-    console.log('logout')
+    localStorage.removeItem("tokenDetails");
     return {
         type: actionTypes.SET_USER_LOGOUT
     }

@@ -4,9 +4,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions';
 
-const Notification = (props) => {
-    let timer = null;
+let timer = null;
 
+const Notification = (props) => {
     React.useEffect(() => {
         try {
             if (props.userDetails.isAuth) {
@@ -14,12 +14,14 @@ const Notification = (props) => {
                     timer = setInterval(fetchNotifications, 10000);
             }
             else {
-                if (timer)
+                if (timer) {
                     clearInterval(timer);
+                    timer = null;
+                }
             }
         }
         catch (error) {
-
+            console.log("Error configuring notification timer: ", error)
         }
     }, [props.userDetails.isAuth]);
 
@@ -51,8 +53,6 @@ const Notification = (props) => {
             console.log("Error in fetching notifications: ", error);
         }
     }
-
-    console.log(props.notifications);
 
     return (
         (

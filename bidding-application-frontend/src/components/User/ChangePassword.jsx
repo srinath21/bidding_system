@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import ErrorBoundary from "../ErrorBoundary";
 import { Grid2 as Grid, Box, TextField, Typography, Checkbox, Button, FormControlLabel, Divider, Stack, CircularProgress } from '@mui/material';
 import { ValidateString } from '../../utilities/UtilityFunction';
@@ -163,67 +163,70 @@ const ChangePassword = (props) => {
 
     return (
         <ErrorBoundary>
-            <Box sx={{ flexGrow: 1, my: 10 }}>
-                <Grid container spacing={2}>
-                    <>
-                        <Grid size={{ xs: 12, md: 6, lg: 4, xl: 3 }}>
-                            <ErrorBoundary>
-                                <Typography variant='h5' sx={{ paddingBottom: "10px" }}>
-                                    Change Password
-                                </Typography>
-                                {
-                                    Object.keys(passwordInfo).map(key => (
-                                        <Grid key={key} size={12} sx={{ my: 2 }}>
-                                            <TextField
-                                                disabled={Boolean(passwordInfo[key].readOnly)}
-                                                error={passwordInfo[key].error !== null}
-                                                variant='outlined'
-                                                value={passwordInfo[key].value}
-                                                label={passwordInfo[key].label}
-                                                type={passwordInfo[key].type}
-                                                fullWidth
-                                                helperText={passwordInfo[key].error}
-                                                onChange={(event) => { handleInputChange(key, event.target.value) }}
-                                            />
-                                        </Grid>
-                                    ))
-                                }
-
-                                <Grid size={12} sx={{ my: 2 }}>
-                                    <Box sx={{ position: "relative" }}>
-                                        <Button variant='contained' fullWidth onClick={handleSubmitClick} disabled={!enableUpdate}>
-                                            Update
-                                        </Button>
-                                        {
-                                            loading && (
-                                                <CircularProgress
-                                                    size={24}
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: '50%',
-                                                        left: '50%',
-                                                        marginTop: '-12px',
-                                                        marginLeft: '-12px',
-                                                    }}
-                                                />
-                                            )
-                                        }
-                                    </Box>
+            {props.userDetails.isAuth ?
+                <Box sx={{ flexGrow: 1, my: 10 }}>
+                    <Grid container spacing={2}>
+                        <>
+                            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 3 }}>
+                                <ErrorBoundary>
+                                    <Typography variant='h5' sx={{ paddingBottom: "10px" }}>
+                                        Change Password
+                                    </Typography>
                                     {
-                                        result ? <Typography variant="body2"
-                                            sx={{ color: (result.success ? "green" : "red"), width: "100%", textAlign: "center", mt: 1 }} >
-                                            {result.message}
-                                        </Typography> : null
+                                        Object.keys(passwordInfo).map(key => (
+                                            <Grid key={key} size={12} sx={{ my: 2 }}>
+                                                <TextField
+                                                    disabled={Boolean(passwordInfo[key].readOnly)}
+                                                    error={passwordInfo[key].error !== null}
+                                                    variant='outlined'
+                                                    value={passwordInfo[key].value}
+                                                    label={passwordInfo[key].label}
+                                                    type={passwordInfo[key].type}
+                                                    fullWidth
+                                                    helperText={passwordInfo[key].error}
+                                                    onChange={(event) => { handleInputChange(key, event.target.value) }}
+                                                />
+                                            </Grid>
+                                        ))
                                     }
-                                </Grid>
-                            </ErrorBoundary>
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6, lg: 8, xl: 9 }}>
 
-                        </Grid>
-                    </>
-                </Grid>
-            </Box>
+                                    <Grid size={12} sx={{ my: 2 }}>
+                                        <Box sx={{ position: "relative" }}>
+                                            <Button variant='contained' fullWidth onClick={handleSubmitClick} disabled={!enableUpdate}>
+                                                Update
+                                            </Button>
+                                            {
+                                                loading && (
+                                                    <CircularProgress
+                                                        size={24}
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: '50%',
+                                                            left: '50%',
+                                                            marginTop: '-12px',
+                                                            marginLeft: '-12px',
+                                                        }}
+                                                    />
+                                                )
+                                            }
+                                        </Box>
+                                        {
+                                            result ? <Typography variant="body2"
+                                                sx={{ color: (result.success ? "green" : "red"), width: "100%", textAlign: "center", mt: 1 }} >
+                                                {result.message}
+                                            </Typography> : null
+                                        }
+                                    </Grid>
+                                </ErrorBoundary>
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6, lg: 8, xl: 9 }}>
+
+                            </Grid>
+                        </>
+                    </Grid>
+                </Box>
+                : <Navigate to="/" />
+            }
         </ErrorBoundary>
     )
 }
